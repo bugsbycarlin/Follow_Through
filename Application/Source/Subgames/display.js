@@ -8,6 +8,14 @@
 
 let loading_counter = 0;
 
+const one_day = 1000 * 60 * 60 * 24;
+
+function resetFollowThrough() {
+  console.log(game.screens["display"].data);
+  game.screens["display"].data = {};
+  game.screens["display"].initializeElements();
+}
+
 
 class Display extends Screen {
   // Set up the screen
@@ -34,35 +42,80 @@ class Display extends Screen {
 
     this.title = makeText("Follow Through", this.core_font, layers["banner"], 341, 29, 0, 0.5);
 
-    this.trash = makeSprite("trash", layers["banner"], 841, 31, 0, 0.5, true);
+    this.trash_visible = false;
+    this.trash = makeSquishButton("trash", layers["banner"],
+        841 + 22.5, 31, true, "button",
+        () => {
+          this.trash_visible = this.trash_visible == false ? true : false;
+
+          for (let c = 0; c < 8; c++) {
+            if (c in this.data) {
+              this.elements[c].element_trash.visible = this.trash_visible == true ? true : false
+            }
+          }
+        }
+    );
     this.trash.scale = (0.35, 0.35);
 
     this.data = {
       0: {
         title:"Sword Fighting",
         decay: 1,
+        timestamp: Date.now(),
         health: 4,
         color: 3,
+      },
+      1: {
+        title:"Ab Work",
+        decay: 1,
+        timestamp: Date.now(),
+        health: 2,
+        color: 4,
       },
       2: {
         title:"Chinese Practice",
         decay: 1,
+        timestamp: Date.now(),
         health: 5,
         color: 2,
       },
       3: {
         title:"Drawing Practice",
         decay: 1,
-        health: 7,
+        timestamp: Date.now(),
+        health: 3,
         color: 0,
       },
-
-      // Fat Abs
-      // Shoulder
+      4: {
+        title:"Shoulder Therapy",
+        decay: 1,
+        timestamp: Date.now(),
+        health: 3,
+        color: 7,
+      },
     }
+    // this.loadData();
+
+    this.initializeElements();
+  }
 
 
+  saveData() {
+    localStorage.setItem("follow_through_data", JSON.stringify(this.data));
+    let x = localStorage.getItem("follow_through_data", "{}");
+  }
+
+  loadData() {
+    let x = localStorage.getItem("follow_through_data");
+    this.data = JSON.parse(localStorage.getItem("follow_through_data"));
+  }
+
+
+  initializeElements() {
+    let layers = this.layers;
+    layers["elements"].removeChildren();
     this.elements = []
+    this.health_bars = []
     for (i = 0; i < 8; i++) {
       let x = Math.floor(i/4);
       let y = i % 4 * 100 + 60;
@@ -76,27 +129,117 @@ class Display extends Screen {
       } else {
         element_background.tint = 0xfefefe;
       }
-
-      if (i in this.data) {
-        let text = makeText(this.data[i].title, this.core_font, this.elements[i], 18, 23, 0, 0.5);
-        for (let j = 0; j < 7; j++) {
-          console.log(this.data[i].health);
-          let sprite_name = (this.data[i].health > j) ? "button_" + this.data[i].color : "button_e" 
-          console.log(sprite_name)
-          let health_button = makeSprite(sprite_name, this.elements[i], 18 + 50 * j, 45, 0, 0, true);
-          health_button.scale = (0.35, 0.35)
-        }
-
-      }
-      
-
+      this.health_bars[i] = new PIXI.Container();
+      this.elements[i].addChild(this.health_bars[i])
+      this.updateHealthBars(i);
     }
+  }
+
+
+  updateHealthBars(i) {
+    this.health_bars[i].removeChildren();
+    this.health_bars[i].buttons = [];
+    let data = this.data;
+    this.elements[i].element_trash = null;
+    if (i in data) {
+
+      let num = i;
+      let element_trash = makeSquishButton("trash", this.elements[i],
+          400 + 22.5, 31, true, "button",
+          ()=> {
+            console.log(this.data);
+            console.log(num);
+            delete this.data[num];
+            console.log("New data");
+            console.log(this.data);
+            this.initializeElements();
+          }
+      );
+      element_trash.scale = (0.35, 0.35);
+      // element_trash.visible = false;
+      element_trash.visible = this.trash_visible == true ? true : false
+      this.elements[i].element_trash = element_trash;
+
+      let text = makeText(data[i].title, this.core_font, this.health_bars[i], 18, 23, 0, 0.5);
+      for (let j = 0; j < 7; j++) {
+        let sprite_name = (data[i].health > j) ? "button_" + data[i].color : "button_e" 
+        let health_button = null;
+        if (data[i].health == j) {
+          health_button = makeSquishButton(
+            sprite_name, this.health_bars[i],
+            18 + 50 * j + 22.5, 45 + 22.5, true, "button",
+            ()=> {
+              data[i].health += 1;
+              this.updateHealthBars(i);
+
+              if (data[i].health == 7) {
+                delay(()=> {
+                  soundEffect("fill_" + dice(3));
+                }, 100);
+                for (let m = 0; m < 7; m++) {
+                  delay(()=> {
+                    let b = this.health_bars[i].buttons[m];
+                    b.old_scale_x = b.scale.x;
+                    b.old_scale_y = b.scale.y;
+                    b.scale.set(1.1 * b.old_scale_x, 0.9 * b.old_scale_y);
+                  }, 100 + 50 * m);
+                  delay(()=> {
+                    let b = this.health_bars[i].buttons[m];
+                    b.scale.set(b.old_scale_x, b.old_scale_y);
+                  }, 200 + 50 * m);
+                }
+
+                let fireworks = true;
+                for (let n = 0; n < 8; n++) {
+                  if (n in data && data[n].health != 7) {
+                    fireworks = false;
+                  }
+                }
+                if (fireworks) {
+                  delay(()=> {
+                    soundEffect("completion");
+                  }, 200);
+                  for(let p = 0; p < 10 + dice(10); p++) {
+                    delay(()=> {
+                      soundEffect("explosion_" + dice(2), 0.1);
+                      makeFireworks(this, "orange", dice(game.width), dice(game.height), 1, 1);
+                    }, 300 + 200 * p + dice(200));
+                  }
+                }
+              }
+            }
+          );
+        } else {
+          health_button = makeSprite(sprite_name, this.health_bars[i], 18 + 50 * j + 22.5, 45 + 22.5, 0.5, 0.5, true)
+        }
+        this.health_bars[i].buttons[j] = health_button;
+        health_button.scale = (0.35, 0.35)
+      }
+    }
+
+    this.saveData();
+  }
+
+
+  getDate() {
+    return new Date(new Date().setHours(0,0,0,0));
   }
 
 
   // Regular update method
   update(diff) {
     let fractional = diff / (1000/30.0);
+
+
+    let current_date = this.getDate();
+    for (let i = 0; i < 8; i++) {
+      if (i in this.data) {
+        let old_date = this.data[i].timestamp;
+
+      }
+    }
+
+
 
     // this.title.text += "a"
   }

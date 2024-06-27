@@ -164,6 +164,8 @@ class Game {
 
     // Pastel Buttons for Follow Through come from
     // https://villaniouscat.itch.io/pastelpixelbuttons/
+    Assets.add({ alias: "fireworks_blue", src: "Art/fireworks_blue.json"});
+    Assets.add({ alias: "fireworks_orange", src: "Art/fireworks_orange.json"});
     Assets.add({ alias: "button_0", src: "Art/button_0.png" });
     Assets.add({ alias: "button_1", src: "Art/button_1.png" });
     Assets.add({ alias: "button_2", src: "Art/button_2.png" });
@@ -176,13 +178,14 @@ class Game {
     Assets.add({ alias: "trash", src: "Art/trash.png" });
     Assets.add({ alias: "BitOperator.ttf", src:"BitOperator.ttf", data: { scaleMode: PIXI.SCALE_MODES.NEAREST }});
     const assetsPromise = Assets.load(
-      ["button_0","button_1","button_2","button_3",
+      ["fireworks_blue", "fireworks_orange",
+       "button_0","button_1","button_2","button_3",
        "button_4","button_5","button_6","button_7",
        "button_e","trash","BitOperator.ttf"]
     );
     assetsPromise.then((assets) => {
       console.log("the assets");
-      console.log(assets);
+      console.log(Assets.get("fireworks_orange"));
       and_then();
     });
   }

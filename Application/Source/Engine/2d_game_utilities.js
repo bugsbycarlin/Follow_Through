@@ -91,7 +91,8 @@ function makeSprite(path, parent, x, y, anchor_x=0, anchor_y=0, pixel_hard_scale
 
 
 function makeAnimatedSprite(path, animation, parent, x, y, anchor_x=0, anchor_y=0, pixel_hard_scale=true) {
-  let sheet = PIXI.Loader.shared.resources[path].spritesheet;
+  // let sheet = PIXI.Loader.shared.resources[path].spritesheet;
+  let sheet = PIXI.Assets.get(path)
   if (animation == null) animation = Object.keys(sheet.animations)[0];
   let new_sprite = new PIXI.AnimatedSprite(sheet.animations[animation]);
   if (pixel_hard_scale) new_sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
@@ -107,10 +108,8 @@ function makeAnimatedSprite(path, animation, parent, x, y, anchor_x=0, anchor_y=
 
 function makeText(text, text_style, parent, x, y, anchor_x=0, anchor_y=0) {
   let new_text = new PIXI.Text({text:text, style:text_style});
-  console.log(text_style);
   new_text.anchor.set(anchor_x, anchor_y);
   new_text.position.set(x, y);
-  console.log(new_text);
   // no longer valid in Pixi 8
   // new_text.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
   if (parent != null) {
@@ -134,6 +133,26 @@ function makeBlank(parent, width, height, x, y, color=0xFFFFFF, anchor_x=0, anch
     blank.parent = parent;
   }
   return blank;
+}
+
+
+function makeSquishButton(path, parent, x, y, pixel_hard_scale=true, sound_effect="button", action=null) {
+  let buttonSprite = makeSprite(path, parent, x, y, 0.5, 0.5, pixel_hard_scale);
+  buttonSprite.eventMode = 'static';
+  buttonSprite.on('pointerdown', function() {
+    this.old_scale_x = this.scale.x;
+    this.old_scale_y = this.scale.y;
+    this.scale.set(1.1 * this.old_scale_x, 0.9 * this.old_scale_y);
+    soundEffect(sound_effect);
+  });
+  buttonSprite.on('pointerup', function() {
+    this.scale.set(this.old_scale_x, this.old_scale_y);
+    if (action != null) {
+      action();
+    }
+  });
+
+  return buttonSprite
 }
 
 
