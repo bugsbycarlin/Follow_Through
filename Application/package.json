@@ -37,10 +37,14 @@
         }
       ]
     },
+    "win": {
+      "target": "nsis",
+      "icon": "./Icons/follow_through.ico"
+    },
     "mac": {
       "category": "public.app-category.productivity",
       "target": "dmg",
-      "icon": "./Icons/followthrough.icns",
+      "icon": "./Icons/follow_through.icns",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "entitlements.mac.plist",

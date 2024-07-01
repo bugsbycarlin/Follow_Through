@@ -11,7 +11,6 @@ let loading_counter = 0;
 const one_day = 1000 * 60 * 60 * 24;
 
 function resetFollowThrough() {
-  console.log(game.screens["display"].data);
   game.screens["display"].data = {};
   game.screens["display"].initializeElements();
 }
@@ -58,6 +57,7 @@ class Display extends Screen {
           for (let c = 0; c < 8; c++) {
             if (c in this.data) {
               this.elements[c].element_trash.visible = this.trash_visible == true ? true : false
+              this.elements[c].element_edit.visible = false;
             }
           }
         },
@@ -72,54 +72,38 @@ class Display extends Screen {
         () => {
           this.edit_visible = this.edit_visible == false ? true : false;
 
-          // for (let c = 0; c < 8; c++) {
-          //   if (c in this.data) {
-          //     this.elements[c].element_edit.visible = this.edit_visible == true ? true : false
-          //   }
-          // }
+          for (let c = 0; c < 8; c++) {
+            if (c in this.data) {
+              this.elements[c].element_edit.visible = this.edit_visible == true ? true : false
+              this.elements[c].element_trash.visible = false;
+            }
+          }
         },
         ()=> {return this.stateGuard()}
     );
     this.edit.scale = (0.35, 0.35);
 
-    this.data = {
-      0: {
-        title:"Sword Fighting",
-        decay: 3,
-        timestamp: this.getFlatDate(),
-        health: 4,
-        color: 3,
-      },
-      1: {
-        title:"Ab Work",
-        decay: 1,
-        timestamp: this.getFlatDate(),
-        health: 2,
-        color: 4,
-      },
-      2: {
-        title:"Chinese Practice",
-        decay: 1,
-        timestamp: this.getFlatDate(),
-        health: 5,
-        color: 2,
-      },
-      3: {
-        title:"Drawing Practice",
-        decay: 1,
-        timestamp: this.getFlatDate(),
-        health: 3,
-        color: 0,
-      },
-      4: {
-        title:"Shoulder Therapy",
-        decay: 1,
-        timestamp: this.getFlatDate(),
-        health: 3,
-        color: 7,
-      },
+    this.loadData();
+
+    if (Object.keys(this.data).length === 0) {
+      this.data = {
+        0: {
+          title:"Fabulous Project",
+          decay: 1,
+          timestamp: this.getFlatDate(),
+          health: 4,
+          color: 6,
+        },
+        5: {
+          title:"Fun Weekly Practice",
+          decay: 7,
+          timestamp: this.getFlatDate(),
+          health: 6,
+          color: 1,
+        },
+      }
+      
     }
-    // this.loadData();
 
     this.initializeElements();
     this.initializeAddBox();
@@ -164,8 +148,6 @@ class Display extends Screen {
       element_background.eventMode = 'static';
       element_background.on('pointerup', ()=> {
         if (this.stateGuard() == false) return;
-        console.log(num);
-        console.log(this.data);
         if ((num in this.data) == false && layers["add_box"].visible == false) {
           this.prepareAddMode(num);
           this.state = "add";
@@ -220,9 +202,6 @@ class Display extends Screen {
     this.check_mark = makeSquishButton("check_mark", layers["add_box"],
         743, 345, true, "pop",
         ()=> {
-          console.log("here");
-
-
           this.data[this.add_box_element_number] = {
             title:this.new_data.title,
             decay: this.new_data.decay,
@@ -243,9 +222,6 @@ class Display extends Screen {
     let decay_down = makeSquishButton("left_button", layers["add_box"],
         480, 173, true, "pop",
         ()=> {
-          // console.log("here");
-          // layers["add_box"].visible = false;
-          // this.state = "main";
           this.new_data.decay -= 1;
           if (this.new_data.decay < 1) this.new_data.decay = 1;
           this.add_box_decay.text = this.new_data.decay;
@@ -260,11 +236,7 @@ class Display extends Screen {
     let decay_up = makeSquishButton("right_button", layers["add_box"],
         540, 173, true, "pop",
         ()=> {
-          // console.log("here");
-          // layers["add_box"].visible = false;
-          // this.state = "main";
           this.new_data.decay += 1;
-          // if (this.new_data.decay < 1) this.new_data.decay = 1;
           this.add_box_decay.text = this.new_data.decay;
         },
         ()=> {return this.stateGuard("add")}
@@ -280,7 +252,7 @@ class Display extends Screen {
 
     // this.add_box_colors = [];
     for (let i = 0; i < 8; i++) {
-          // element health down button
+        // element health down button
         let num = i;
         let b = makeSquishButton(
           "button_" + i, layers["add_box"],
@@ -298,10 +270,12 @@ class Display extends Screen {
 
 
   updateHealthBars(i) {
+    let layers = this.layers;
     this.health_bars[i].removeChildren();
     this.health_bars[i].buttons = [];
     let data = this.data;
     this.elements[i].element_trash = null;
+    this.elements[i].element_edit = null;
     if (i in data) {
 
       let num = i;
@@ -309,23 +283,32 @@ class Display extends Screen {
       let element_trash = makeSquishButton("trash", this.elements[i],
           400 + 22.5, 31, true, "pop",
           ()=> {
-            console.log(this.data);
-            console.log(num);
             delete this.data[num];
-            console.log("New data");
-            console.log(this.data);
             this.initializeElements();
           },
           ()=> {return this.stateGuard()}
       );
       element_trash.scale = (0.35, 0.35);
-      // element_trash.visible = false;
       element_trash.visible = this.trash_visible == true ? true : false
       this.elements[i].element_trash = element_trash;
 
+      let element_edit = makeSquishButton("gear", this.elements[i],
+          400 + 22.5, 31, true, "pop",
+          ()=> {
+            if ((num in this.data) == true && layers["add_box"].visible == false) {
+              this.prepareAddMode(num, this.data[num]);
+              this.state = "add";
+              soundEffect("pop");
+              layers["add_box"].visible = true;
+            }
+          },
+          ()=> {return this.stateGuard()}
+      );
+      element_edit.scale = (0.35, 0.35);
+      element_edit.visible = this.edit_visible == true ? true : false
+      this.elements[i].element_edit = element_edit;
+
       let text = makeText(data[i].title, this.core_font, this.health_bars[i], 18, 23, 0, 0.5);
-      let decay_text = makeText("0/" + data[i].decay, this.tiny_font, this.health_bars[i], 418, 85, 0, 0.5);
-      this.elements[i].decay_text = decay_text;
       for (let j = 0; j < 7; j++) {
         let sprite_name = (data[i].health > j) ? "button_" + data[i].color : "button_e" 
         let health_button = null;
@@ -461,7 +444,6 @@ class Display extends Screen {
 
 
   deleteType() {
-    console.log("yo")
     if (this.new_data.title.length > 0) this.new_data.title = this.new_data.title.slice(0,-1);
     this.add_box_name.text = "Name: " + this.new_data.title;
     this.add_box_grey.visible = (this.new_data.title.length == 0);
@@ -483,14 +465,12 @@ class Display extends Screen {
       if (i in this.data) {
         let old_date = this.data[i].timestamp;
         let days = (current_date - old_date) / one_day;
-        this.elements[i].decay_text.text = days + "/" + this.data[i].decay; 
         if (days >= this.data[i].decay) {
           let number = Math.floor(days / this.data[i].decay);
           this.data[i].health -= number;
           if (this.data[i].health < 0) this.data[i].health = 0;
           this.data[i].timestamp = current_date;
           this.updateHealthBars(i);
-          this.elements[i].decay_text.text = "0/" + this.data[i].decay;
         }
       }
     }

@@ -153,6 +153,10 @@ function makeSquishButton(path, parent, x, y, pixel_hard_scale=true, sound_effec
       action();
     }
   });
+  buttonSprite.on('pointerupoutside', function() {
+    if (guard != null && guard() == false) return;
+    this.scale.set(this.old_scale_x, this.old_scale_y);
+  });
 
   return buttonSprite
 }
