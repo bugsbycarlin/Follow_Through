@@ -29,6 +29,7 @@ let sound_files = [
   ["fill_1", "fill_1.wav"],
   ["fill_2", "fill_2.wav"],
   ["fill_3", "fill_3.wav"],
+  ["pop", "pop.wav"],
   ["explosion_1", "explosion_1.wav"],
   ["explosion_2", "explosion_2.wav"],
   ["completion", "completion.wav"],

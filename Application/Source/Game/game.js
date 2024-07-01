@@ -176,12 +176,19 @@ class Game {
     Assets.add({ alias: "button_7", src: "Art/button_7.png" });
     Assets.add({ alias: "button_e", src: "Art/button_e.png" });
     Assets.add({ alias: "trash", src: "Art/trash.png" });
+    Assets.add({ alias: "gear", src: "Art/gear.png" });
+    Assets.add({ alias: "x_mark", src: "Art/x_mark.png" });
+    Assets.add({ alias: "check_mark", src: "Art/check_mark.png" });
+    Assets.add({ alias: "left_button", src: "Art/left_button.png" });
+    Assets.add({ alias: "right_button", src: "Art/right_button.png" });
     Assets.add({ alias: "BitOperator.ttf", src:"BitOperator.ttf", data: { scaleMode: PIXI.SCALE_MODES.NEAREST }});
     const assetsPromise = Assets.load(
       ["fireworks_blue", "fireworks_orange",
        "button_0","button_1","button_2","button_3",
        "button_4","button_5","button_6","button_7",
-       "button_e","trash","BitOperator.ttf"]
+       "button_e","trash","gear", "x_mark",
+       "left_button", "right_button",
+       "check_mark", "BitOperator.ttf"]
     );
     assetsPromise.then((assets) => {
       console.log("the assets");

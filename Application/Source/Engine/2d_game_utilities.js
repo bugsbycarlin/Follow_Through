@@ -136,16 +136,18 @@ function makeBlank(parent, width, height, x, y, color=0xFFFFFF, anchor_x=0, anch
 }
 
 
-function makeSquishButton(path, parent, x, y, pixel_hard_scale=true, sound_effect="button", action=null) {
+function makeSquishButton(path, parent, x, y, pixel_hard_scale=true, sound_effect="button", action=null, guard=null) {
   let buttonSprite = makeSprite(path, parent, x, y, 0.5, 0.5, pixel_hard_scale);
   buttonSprite.eventMode = 'static';
   buttonSprite.on('pointerdown', function() {
+    if (guard != null && guard() == false) return;
     this.old_scale_x = this.scale.x;
     this.old_scale_y = this.scale.y;
     this.scale.set(1.1 * this.old_scale_x, 0.9 * this.old_scale_y);
     soundEffect(sound_effect);
   });
   buttonSprite.on('pointerup', function() {
+    if (guard != null && guard() == false) return;
     this.scale.set(this.old_scale_x, this.old_scale_y);
     if (action != null) {
       action();
