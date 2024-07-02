@@ -21,6 +21,8 @@ exports.default = async function notarizing(context) {
   console.log(process.env.APPLEID);
   // xcrun altool --list-providers -u $APPLEID -p $APPLEIDPASS
   console.log(process.env.APPLEPROVIDER);
+  console.log(process.env.APPLETEAMID);
+
 
   return await notarize({
     appBundleId: 'com.alphazoo.sovietcomputerlab',
@@ -28,5 +30,7 @@ exports.default = async function notarizing(context) {
     appleId: process.env.APPLEID,
     appleIdPassword: process.env.APPLEIDPASS,
     ascProvider: process.env.APPLEPROVIDER,
+    teamId: process.env.APPLETEAMID,
+    tool:'notarytool',
   });
 };

@@ -1,6 +1,8 @@
+
+![Follow Through!](https://github.com/bugsbycarlin/Follow_Through/blob/master/Art/screenshot.png?raw=true)
+
 # Follow_Through
 Simple productivity program
-
 
 # About
 Follow Through is a simple productivity program that lets you keep track of eight ongoing things by means of cute little health bars that you can fill when you want, which each decay on an adjustable N-day schedule. You can use it to make sure you're keeping up with daily tasks, doing some weekly activity that you like but forget, or getting to your projects every few days.
