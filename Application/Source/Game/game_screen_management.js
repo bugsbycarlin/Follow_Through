@@ -36,8 +36,14 @@ class Screen extends PIXI.Container {
 
 
 Game.prototype.createScreen = function(screen_name, extra_param = null, reset = false) {
-  if (screen_name == "display") {
-    this.screens["display"] = new Display(this.width, this.height);
+  if (screen_name == "fight") {
+    this.screens["fight"] = new FightScreen(this.width, this.height);
+  } else if (screen_name == "add") {
+    this.screens["add"] = new AddScreen(this.width, this.height);
+  } else if (screen_name == "bestiary") {
+    this.screens["bestiary"] = new BestiaryScreen(this.width, this.height);
+  } else if (screen_name == "me") {
+    this.screens["me"] = new MeScreen(this.width, this.height);
   }
 
   console.log(screen_name);

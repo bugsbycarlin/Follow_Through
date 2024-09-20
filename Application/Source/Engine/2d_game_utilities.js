@@ -93,6 +93,7 @@ function makeSprite(path, parent, x, y, anchor_x=0, anchor_y=0, pixel_hard_scale
 function makeAnimatedSprite(path, animation, parent, x, y, anchor_x=0, anchor_y=0, pixel_hard_scale=true) {
   // let sheet = PIXI.Loader.shared.resources[path].spritesheet;
   let sheet = PIXI.Assets.get(path)
+  console.log(sheet);
   if (animation == null) animation = Object.keys(sheet.animations)[0];
   let new_sprite = new PIXI.AnimatedSprite(sheet.animations[animation]);
   if (pixel_hard_scale) new_sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
@@ -133,6 +134,70 @@ function makeBlank(parent, width, height, x, y, color=0xFFFFFF, anchor_x=0, anch
     blank.parent = parent;
   }
   return blank;
+}
+
+
+function makeFlexibleTextBox(text, font, parent, x, y, texture="paper_1") {
+  let margin = font.fontSize;
+  let measure = PIXI.CanvasTextMetrics.measureText(text, new PIXI.TextStyle(font));
+    
+  let text_box = new PIXI.Container();
+  if (parent != null) {
+    parent.addChild(text_box);
+    text_box.parent = parent;
+  }
+  text_box.position.set(x, y)
+
+  let menu_backing = makeFlexibleTextBacking(texture, text_box, 0, 0, measure.width + 2 * margin + 8, measure.lines.length * 2 * margin + 8);
+  let menu_text = makeText(text, font, text_box, margin + 4, measure.lines.length * margin + 4, 0, 0.5);
+
+  return text_box;
+}
+
+
+function makeFlexibleTextBacking(texture_path, parent, x, y, width, height, pixel_hard_scale=true) {
+
+  let flexible_menu = new PIXI.Container();
+
+  makeBlank(flexible_menu, width, height, 0, 0, 0x000000, 0, 0);
+  makeBlank(flexible_menu, width, height, 4, 4, 0x000000, 0, 0);
+
+  // let base_texture = PIXI.Texture.from(texture_path);
+  let base_texture = PIXI.Assets.get(texture_path);
+  console.log(base_texture.width);
+  let clip_texture = new PIXI.Texture({
+    source: base_texture,
+    frame: new PIXI.Rectangle(dice(base_texture.width/8),dice(base_texture.height/8),width - 8,height - 8),
+  });
+
+
+  let new_sprite = new PIXI.Sprite(clip_texture);
+  if (pixel_hard_scale) new_sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+  new_sprite.position.set(4, 4);
+  new_sprite.anchor.set(0, 0);
+  flexible_menu.addChild(new_sprite);
+
+  let left_shade = makeBlank(flexible_menu, 4, height, 4, 0, 0x000000, 0, 0);
+  left_shade.alpha = 0.4;
+
+  let top_shade = makeBlank(flexible_menu, width - 16, 4, 8, 4, 0xFFFFFF, 0, 0);
+  top_shade.alpha = 0.6;
+
+  let right = makeBlank(flexible_menu, 4, height, width - 8, 0, 0x000000, 0, 0);
+  right.alpha = 0.4;
+
+  let bottom_shade = makeBlank(flexible_menu, width - 16, 4, 8, height - 8, 0x000000, 0, 0);
+  bottom_shade.alpha = 0.4;
+
+
+  if (parent != null) {
+    parent.addChild(flexible_menu);
+    flexible_menu.parent = parent;
+  }
+
+  flexible_menu.position.set(x, y);
+
+  return flexible_menu;
 }
 
 

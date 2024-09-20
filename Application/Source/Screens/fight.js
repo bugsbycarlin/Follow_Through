@@ -11,12 +11,12 @@ let loading_counter = 0;
 const one_day = 1000 * 60 * 60 * 24;
 
 function resetFollowThrough() {
-  game.screens["display"].data = {};
-  game.screens["display"].initializeElements();
+  game.screens["fight"].data = {};
+  game.screens["fight"].initializeElements();
 }
 
 
-class Display extends Screen {
+class FightScreen extends Screen {
   // Set up the screen
   initialize(game_width, game_height) {
     this.state = null;
@@ -28,14 +28,19 @@ class Display extends Screen {
     this.addChild(layers["banner"]);
 
     layers["elements"] = new PIXI.Container();
-    this.addChild(layers["elements"]);
+    // this.addChild(layers["elements"]);
 
     layers["add_box"] = new PIXI.Container();
     this.addChild(layers["add_box"]);
 
+    layers["banner"] = new PIXI.Container();
+    this.addChild(layers["banner"]);
+
+
     this.core_font = {fontFamily: "BitOperator", fontSize: 24, fontWeight: 200, fill: 0x000000, letterSpacing: 1, align: "left"};
     this.tiny_font = {fontFamily: "BitOperator", fontSize: 12, fontWeight: 200, fill: 0x000000, letterSpacing: 1, align: "left"};
     this.grey_font = {fontFamily: "BitOperator", fontSize: 24, fontWeight: 200, fill: 0xb1b2b5, letterSpacing: 1, align: "left"};
+    this.mini_font = {fontFamily: "BitOperator", fontSize: 18, fontWeight: 200, fill: 0x000000, letterSpacing: 1, align: "left"};
     
 
     // make the layout
@@ -45,7 +50,35 @@ class Display extends Screen {
     let bottom_banner = makeBlank(layers["banner"], game_width, 20, 0, 460);
     bottom_banner.tint = 0xb1b2b5;
 
-    this.title = makeText("Follow Through", this.core_font, layers["banner"], 341, 29, 0, 0.5);
+    this.title = makeText("Follow Throog", this.core_font, layers["banner"], 341, 29, 0, 0.5);
+
+    let texts = [
+      "French Unit 1",
+      "Chinese Unit 1",
+      "Cute Stuff Book",
+      "Garage and Shed Revamp",
+      "Kings Recording Phase Oct 5",
+      "Escape Room Oct 21",
+      "Music Collection Cleanup",
+      "Speed Run Ancient Civs with Clara"
+    ]
+
+    for (let i = 0; i < texts.length; i++) {
+      let test_text_box = makeFlexibleTextBox(texts[i], this.mini_font, layers["banner"], this.width - 500, 100 + 90 * i); 
+    }
+
+    // let fw_sprite = makeAnimatedSprite("fireworks_blue", null, layers["banner"], 200, 100, 0.5, 0.5);
+
+    for (let i = 0; i < 8; i++) {
+      let monster_sprite = makeAnimatedSprite("m0" + (i+1), null, layers["banner"], this.width - 600 + 400 * (i % 2), 100 + 90 * i, 0.5, 0.95);
+      monster_sprite.scale.set(2,2);
+    }
+
+
+    let hero_sprite = makeAnimatedSprite("h01", null, layers["banner"], 400, 400, 0.5, 0.95)
+    hero_sprite.scale.set(2,2);
+    
+
 
     this.trash_visible = false;
     // big trash button
@@ -89,14 +122,14 @@ class Display extends Screen {
       this.data = {
         0: {
           title:"Fabulous Project",
-          decay: 1,
+          grace_period: 1,
           timestamp: this.getFlatDate(),
           health: 4,
           color: 6,
         },
         5: {
           title:"Fun Weekly Practice",
-          decay: 7,
+          grace_period: 7,
           timestamp: this.getFlatDate(),
           health: 6,
           color: 1,
@@ -120,6 +153,11 @@ class Display extends Screen {
   loadData() {
     let x = localStorage.getItem("follow_through_data");
     this.data = JSON.parse(localStorage.getItem("follow_through_data"));
+    // this.data = {};
+    console.log(this.data);
+    for (var i in this.data) {
+      this.data[i].timestamp = Date.parse(this.data[i].timestamp)
+    }
   }
 
 
@@ -184,7 +222,7 @@ class Display extends Screen {
     this.add_box_name = makeText("Name: ", this.core_font, layers["add_box"], 150, 110, 0, 0.5);
     this.add_box_grey = makeText("(just start typing)", this.grey_font, layers["add_box"], 250, 110, 0, 0.5);
     
-    let add_box_decay = makeText("Decay Time in Days: ", this.core_font, layers["add_box"], 150, 170, 0, 0.5);
+    let add_box_grace_period = makeText("Grace Period: ", this.core_font, layers["add_box"], 150, 170, 0, 0.5);
     let add_box_color = makeText("Color: ", this.core_font, layers["add_box"], 150, 230, 0, 0.5);
 
     // add box x_mark
@@ -204,7 +242,7 @@ class Display extends Screen {
         ()=> {
           this.data[this.add_box_element_number] = {
             title:this.new_data.title,
-            decay: this.new_data.decay,
+            grace_period: this.new_data.grace_period,
             timestamp: this.getFlatDate(),
             health: this.new_data.health,
             color: this.new_data.color,
@@ -218,30 +256,30 @@ class Display extends Screen {
     );
     this.check_mark.scale.set(0.5, 0.5);
 
-    // add box decay down
-    let decay_down = makeSquishButton("left_button", layers["add_box"],
-        480, 173, true, "pop",
+    // add box grace_period down
+    let grace_period_down = makeSquishButton("left_button", layers["add_box"],
+        380, 173, true, "pop",
         ()=> {
-          this.new_data.decay -= 1;
-          if (this.new_data.decay < 1) this.new_data.decay = 1;
-          this.add_box_decay.text = this.new_data.decay;
+          this.new_data.grace_period -= 1;
+          if (this.new_data.grace_period < 1) this.new_data.grace_period = 1;
+          this.add_box_grace_period.text = this.new_data.grace_period;
         },
         ()=> {return this.stateGuard("add")}
     );
-    decay_down.scale.set(0.5, 0.5);
+    grace_period_down.scale.set(0.5, 0.5);
 
-    this.add_box_decay = makeText("0", this.core_font, layers["add_box"], 508, 170, 0.5, 0.5);
+    this.add_box_grace_period = makeText("0", this.core_font, layers["add_box"], 408, 170, 0.5, 0.5);
 
-    // add box decay up
-    let decay_up = makeSquishButton("right_button", layers["add_box"],
-        540, 173, true, "pop",
+    // add box grace_period up
+    let grace_period_up = makeSquishButton("right_button", layers["add_box"],
+        440, 173, true, "pop",
         ()=> {
-          this.new_data.decay += 1;
-          this.add_box_decay.text = this.new_data.decay;
+          this.new_data.grace_period += 1;
+          this.add_box_grace_period.text = this.new_data.grace_period;
         },
         ()=> {return this.stateGuard("add")}
     );
-    decay_up.scale.set(0.5, 0.5);
+    grace_period_up.scale.set(0.5, 0.5);
 
     this.add_box_colors_x = 175;
     this.add_box_colors_y = 280;
@@ -392,7 +430,7 @@ class Display extends Screen {
     if (old_data != null) {
       this.new_data = {
         title:old_data.title,
-        decay: old_data.decay,
+        grace_period: old_data.grace_period,
         timestamp: old_data.timestamp,
         health: old_data.health,
         color: old_data.color,
@@ -400,7 +438,7 @@ class Display extends Screen {
     } else {
       this.new_data = {
         title:"",
-        decay: 1,
+        grace_period: 1,
         timestamp: null,
         health: 0,
         color: dice(8)-1,
@@ -408,7 +446,7 @@ class Display extends Screen {
     }
     this.add_box_name.text = "Name: " + this.new_data.title;
     this.add_box_element_number = number;
-    this.add_box_decay.text = this.new_data.decay;
+    this.add_box_grace_period.text = this.new_data.grace_period;
     this.add_box_color_selection_box.position.set(this.add_box_colors_x + 60 * this.new_data.color, this.add_box_colors_y);
     this.add_box_grey.visible = (this.new_data.title.length == 0);
     this.check_mark.visible = (this.new_data.title.length > 0);
@@ -464,9 +502,11 @@ class Display extends Screen {
     for (let i = 0; i < 8; i++) {
       if (i in this.data) {
         let old_date = this.data[i].timestamp;
-        let days = (current_date - old_date) / one_day;
-        if (days >= this.data[i].decay) {
-          let number = Math.floor(days / this.data[i].decay);
+        let days = Math.abs(current_date - old_date);
+        // console.log(Math.abs(current_date - old_date));
+        // console.log(old_date);
+        if (days >= this.data[i].grace_period) {
+          let number = Math.floor(days / this.data[i].grace_period);
           this.data[i].health -= number;
           if (this.data[i].health < 0) this.data[i].health = 0;
           this.data[i].timestamp = current_date;

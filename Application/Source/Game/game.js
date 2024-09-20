@@ -10,9 +10,9 @@
 var log_performance = true;
 var performance_result = null;
 
-var first_screen = "display";
+var first_screen = "fight";
 
-var subgames = ["display"];
+var subgames = ["fight", "add", "bestiary", "me"];
 
 var pixi = null;
 var game = null;
@@ -58,12 +58,12 @@ class Game {
 
 
   basicInit() {
-    this.width = 900;
-    this.height = 480;
+    this.width = 1600;
+    this.height = 900;
 
     // Create the pixi application
     pixi = new PIXI.Application(this.width, this.height, {antialias: true});
-    const initPromise = pixi.init({ background: '#000000', resizeTo: window });
+    const initPromise = pixi.init({ background: '#b1b2b5', resizeTo: window });
     
     initPromise.then((thing) => {
       document.body.appendChild(pixi.canvas);
@@ -72,7 +72,7 @@ class Game {
       this.renderer = pixi.renderer;
       pixi.renderer.backgroundColor = 0xFFFFFF;
       pixi.renderer.resize(this.width,this.height);
-      pixi.renderer.backgroundColor = 0x000000;
+      pixi.renderer.backgroundColor = 0xb1b2b5;
 
       // Set up rendering and tweening loop
       let ticker = PIXI.Ticker.shared;
@@ -166,6 +166,17 @@ class Game {
     // https://villaniouscat.itch.io/pastelpixelbuttons/
     Assets.add({ alias: "fireworks_blue", src: "Art/fireworks_blue.json"});
     Assets.add({ alias: "fireworks_orange", src: "Art/fireworks_orange.json"});
+    Assets.add({ alias: "m01", src: "Art/Monsters/m01.json"});
+    Assets.add({ alias: "m02", src: "Art/Monsters/m02.json"});
+    Assets.add({ alias: "m03", src: "Art/Monsters/m03.json"});
+    Assets.add({ alias: "m04", src: "Art/Monsters/m04.json"});
+    Assets.add({ alias: "m05", src: "Art/Monsters/m05.json"});
+    Assets.add({ alias: "m06", src: "Art/Monsters/m06.json"});
+    Assets.add({ alias: "m07", src: "Art/Monsters/m07.json"});
+    Assets.add({ alias: "m08", src: "Art/Monsters/m08.json"});
+    Assets.add({ alias: "h01", src: "Art/Heroes/h01.json"});
+    Assets.add({ alias: "h02", src: "Art/Heroes/h02.json"});
+    Assets.add({ alias: "h03", src: "Art/Heroes/h03.json"});
     Assets.add({ alias: "button_0", src: "Art/button_0.png" });
     Assets.add({ alias: "button_1", src: "Art/button_1.png" });
     Assets.add({ alias: "button_2", src: "Art/button_2.png" });
@@ -175,6 +186,8 @@ class Game {
     Assets.add({ alias: "button_6", src: "Art/button_6.png" });
     Assets.add({ alias: "button_7", src: "Art/button_7.png" });
     Assets.add({ alias: "button_e", src: "Art/button_e.png" });
+    Assets.add({ alias: "paper_1", src: "Art/paper_1.png" });
+    Assets.add({ alias: "paper_2", src: "Art/paper_2.png" });
     Assets.add({ alias: "trash", src: "Art/trash.png" });
     Assets.add({ alias: "gear", src: "Art/gear.png" });
     Assets.add({ alias: "x_mark", src: "Art/x_mark.png" });
@@ -186,9 +199,12 @@ class Game {
       ["fireworks_blue", "fireworks_orange",
        "button_0","button_1","button_2","button_3",
        "button_4","button_5","button_6","button_7",
+       "paper_1", "paper_2",
        "button_e","trash","gear", "x_mark",
        "left_button", "right_button",
-       "check_mark", "BitOperator.ttf"]
+       "check_mark", "BitOperator.ttf",
+       "h01", "h02", "h03",
+       "m01", "m02", "m03", "m04", "m05", "m06", "m07", "m08"]
     );
     assetsPromise.then((assets) => {
       console.log("the assets");

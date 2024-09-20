@@ -1,0 +1,32 @@
+{"frames": {
+
+"hero_01.png":
+{
+	"frame": {"x":0,"y":0,"w":256,"h":256},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
+	"sourceSize": {"w":256,"h":256}
+},
+"hero_01a.png":
+{
+	"frame": {"x":256,"y":0,"w":256,"h":256},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
+	"sourceSize": {"w":256,"h":256}
+}},
+"animations": {
+	"normal": ["hero_01.png"],
+	"attack": ["hero_01a.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "h01.png",
+	"format": "RGBA8888",
+	"size": {"w":512,"h":256},
+	"scale": "2",
+	"smartupdate": "$TexturePacker:SmartUpdate:d99af09b9e49afea2cf36cfc8eca8dc4:8d4799036a6122a669913066355726f4:bd6429642a9a1130fd1960ef2a66b3a8$"
+}
+}
