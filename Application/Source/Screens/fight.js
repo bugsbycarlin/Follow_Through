@@ -21,8 +21,13 @@ class FightScreen extends Screen {
   initialize(game_width, game_height) {
     this.state = null;
 
+    // livelies = [];
+
     this.layers = {};
     let layers = this.layers;
+
+    layers["background"] = new PIXI.Container();
+    this.addChild(layers["background"]);
 
     layers["banner"] = new PIXI.Container();
     this.addChild(layers["banner"]);
@@ -44,13 +49,16 @@ class FightScreen extends Screen {
     
 
     // make the layout
-    let top_banner = makeBlank(layers["banner"], game_width, 60, 0, 0);
-    top_banner.tint = 0xb1b2b5;
+    // let top_banner = makeBlank(layers["banner"], game_width, 60, 0, 0);
+    // top_banner.tint = 0xb1b2b5;
 
-    let bottom_banner = makeBlank(layers["banner"], game_width, 20, 0, 460);
-    bottom_banner.tint = 0xb1b2b5;
+    // let bottom_banner = makeBlank(layers["banner"], game_width, 20, 0, 460);
+    // bottom_banner.tint = 0xb1b2b5;
 
-    this.title = makeText("Follow Throog", this.core_font, layers["banner"], 341, 29, 0, 0.5);
+    // this.title = makeText("Follow Through", this.core_font, layers["banner"], 341, 29, 0, 0.5);
+
+    let forest_background = makeSprite("forest_background", layers["background"], 0, 0, 0, 0)
+    // forest_background.scale.set(2,2);
 
     let texts = [
       "French Unit 1",
@@ -63,83 +71,98 @@ class FightScreen extends Screen {
       "Speed Run Ancient Civs with Clara"
     ]
 
-    for (let i = 0; i < texts.length; i++) {
-      let test_text_box = makeFlexibleTextBox(texts[i], this.mini_font, layers["banner"], this.width - 500, 100 + 90 * i); 
-    }
+    let indent = 80;
+    let locations = [
+      [436, 635],
+      [844, 580],
+      [874, 806],
+      [1305, 619],
+      [616, 586],
+      [618, 782],
+      [1080, 646],
+      [1105, 796],
+    ]
+
+    // for (let i = 0; i < texts.length; i++) {
+    //   let test_text_box = makeFlexibleTextBox(texts[i], this.mini_font, layers["banner"], this.width - 500, 100 + 90 * i); 
+    // }
 
     // let fw_sprite = makeAnimatedSprite("fireworks_blue", null, layers["banner"], 200, 100, 0.5, 0.5);
 
+    console.log(this.height);
     for (let i = 0; i < 8; i++) {
-      let monster_sprite = makeAnimatedSprite("m0" + (i+1), null, layers["banner"], this.width - 600 + 400 * (i % 2), 100 + 90 * i, 0.5, 0.95);
+      let monster_sprite = makeAnimatedSprite("m0" + (i+1), null, layers["banner"], locations[i][0], locations[i][1], 0.5, 0.95);
+      // monster_sprite.scale.set(2 * (i % 2 == 0 ? 1 : -1),2);
       monster_sprite.scale.set(2,2);
+      // livelies.push(monster_sprite)
     }
 
 
-    let hero_sprite = makeAnimatedSprite("h01", null, layers["banner"], 400, 400, 0.5, 0.95)
+    let hero_sprite = makeAnimatedSprite("h01", null, layers["banner"], 189, 686, 0.5, 0.95)
     hero_sprite.scale.set(2,2);
     
 
 
-    this.trash_visible = false;
-    // big trash button
-    this.trash = makeSquishButton("trash", layers["banner"],
-        841 + 22.5, 31, true, "pop",
-        () => {
-          this.trash_visible = this.trash_visible == false ? true : false;
+    // this.trash_visible = false;
+    // // big trash button
+    // this.trash = makeSquishButton("trash", layers["banner"],
+    //     841 + 22.5, 31, true, "pop",
+    //     () => {
+    //       this.trash_visible = this.trash_visible == false ? true : false;
 
-          for (let c = 0; c < 8; c++) {
-            if (c in this.data) {
-              this.elements[c].element_trash.visible = this.trash_visible == true ? true : false
-              this.elements[c].element_edit.visible = false;
-            }
-          }
-        },
-        ()=> {return this.stateGuard()}
-    );
-    this.trash.scale = (0.35, 0.35);
+    //       for (let c = 0; c < 8; c++) {
+    //         if (c in this.data) {
+    //           this.elements[c].element_trash.visible = this.trash_visible == true ? true : false
+    //           this.elements[c].element_edit.visible = false;
+    //         }
+    //       }
+    //     },
+    //     ()=> {return this.stateGuard()}
+    // );
+    // this.trash.scale = (0.35, 0.35);
 
-    this.edit_visible = false;
-    // big edit button
-    this.edit = makeSquishButton("gear", layers["banner"],
-        791 + 22.5, 31, true, "pop",
-        () => {
-          this.edit_visible = this.edit_visible == false ? true : false;
+    // this.edit_visible = false;
+    // // big edit button
+    // this.edit = makeSquishButton("gear", layers["banner"],
+    //     791 + 22.5, 31, true, "pop",
+    //     () => {
+    //       this.edit_visible = this.edit_visible == false ? true : false;
 
-          for (let c = 0; c < 8; c++) {
-            if (c in this.data) {
-              this.elements[c].element_edit.visible = this.edit_visible == true ? true : false
-              this.elements[c].element_trash.visible = false;
-            }
-          }
-        },
-        ()=> {return this.stateGuard()}
-    );
-    this.edit.scale = (0.35, 0.35);
+    //       for (let c = 0; c < 8; c++) {
+    //         if (c in this.data) {
+    //           this.elements[c].element_edit.visible = this.edit_visible == true ? true : false
+    //           this.elements[c].element_trash.visible = false;
+    //         }
+    //       }
+    //     },
+    //     ()=> {return this.stateGuard()}
+    // );
+    // this.edit.scale = (0.35, 0.35);
 
-    this.loadData();
+    // this.loadData();
 
-    if (Object.keys(this.data).length === 0) {
-      this.data = {
-        0: {
-          title:"Fabulous Project",
-          grace_period: 1,
-          timestamp: this.getFlatDate(),
-          health: 4,
-          color: 6,
-        },
-        5: {
-          title:"Fun Weekly Practice",
-          grace_period: 7,
-          timestamp: this.getFlatDate(),
-          health: 6,
-          color: 1,
-        },
-      }
+    // if (Object.keys(this.data).length === 0) {
+    //   this.data = {
+    //     0: {
+    //       title:"Fabulous Project",
+    //       grace_period: 1,
+    //       timestamp: this.getFlatDate(),
+    //       health: 4,
+    //       color: 6,
+    //     },
+    //     5: {
+    //       title:"Fun Weekly Practice",
+    //       grace_period: 7,
+    //       timestamp: this.getFlatDate(),
+    //       health: 6,
+    //       color: 1,
+    //     },
+    //   }
       
-    }
+    // }
 
-    this.initializeElements();
-    this.initializeAddBox();
+    // this.initializeElements();
+    // this.initializeAddBox();
 
     this.state = "main";
   }
@@ -497,6 +520,8 @@ class FightScreen extends Screen {
   // Regular update method
   update(diff) {
     let fractional = diff / (1000/30.0);
+
+    // livelyMotion(fractional);
 
     let current_date = this.getFlatDate();
     for (let i = 0; i < 8; i++) {

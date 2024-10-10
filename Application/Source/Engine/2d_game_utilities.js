@@ -65,6 +65,32 @@ shakeDamage = function() {
   }
 }
 
+let livelies = [];
+let lively_counter = 0;
+let lively_speed = 0.5;
+livelyMotion = function(fractional) {
+  lively_counter += fractional * lively_speed;
+  for (let item of livelies) {
+    if (item != null && item.permanent_scale == null) {
+      item.permanent_scale = item.scale.y;
+    }
+    // Note we're not tracking the actual scale for changes, so
+    // if the item is rescaled, the permanent scale will go out of date.
+    if (item != null && item.permanent_scale != null) {
+      item.scale.y = item.permanent_scale * (1 + 0.01 * Math.sin(lively_counter / 10));
+    }
+  }
+
+  let new_livelies = [];
+  for (let i = 0; i < livelies.length; i++) {
+    let item = livelies[i];
+    if (item.status != "dead") {
+      new_livelies.push(item);
+    }
+  }
+  livelies = new_livelies;
+}
+
 
 // This function makes a container which holds a bunch of other
 // sprites and containers. If you move this container, or change

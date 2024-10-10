@@ -177,6 +177,7 @@ class Game {
     Assets.add({ alias: "h01", src: "Art/Heroes/h01.json"});
     Assets.add({ alias: "h02", src: "Art/Heroes/h02.json"});
     Assets.add({ alias: "h03", src: "Art/Heroes/h03.json"});
+    Assets.add({ alias: "forest_background", src: "Art/forest_background.png" });
     Assets.add({ alias: "button_0", src: "Art/button_0.png" });
     Assets.add({ alias: "button_1", src: "Art/button_1.png" });
     Assets.add({ alias: "button_2", src: "Art/button_2.png" });
@@ -203,6 +204,7 @@ class Game {
        "button_e","trash","gear", "x_mark",
        "left_button", "right_button",
        "check_mark", "BitOperator.ttf",
+       "forest_background",
        "h01", "h02", "h03",
        "m01", "m02", "m03", "m04", "m05", "m06", "m07", "m08"]
     );
